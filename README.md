@@ -1,4 +1,4 @@
-# Test Custom CKEditor5 with Downcast Converter
+# Custom CKEditor5 with Downcast Converter
 
 A 'proof of concept' editor CKEditor 5 and React.
 
