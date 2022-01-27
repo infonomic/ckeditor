@@ -14,7 +14,7 @@ Relies on a custom CKEditor build which must be downloaded from here...
 
 - [https://s3.ap-southeast-1.amazonaws.com/downloads.infonomic.io/ckeditor-ckeditor5-build-custom-2.2.1.tgz](https://s3.ap-southeast-1.amazonaws.com/downloads.infonomic.io/ckeditor-ckeditor5-build-custom-2.2.1.tgz)
 
-Place `ckeditor-ckeditor5-build-custom-2.2.0.tgz` in a `custom_modules` directory in the project root (you'll need to create this directory).
+Place `ckeditor-ckeditor5-build-custom-2.2.1.tgz` in a `custom_modules` directory in the project root (you'll need to create this directory).
 
 and then run...
 
