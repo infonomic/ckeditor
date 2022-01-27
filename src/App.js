@@ -72,15 +72,17 @@ function App() {
               data="<p>Hello from CKEditor 5!</p>"
               onReady={editor => {
 
-                editor.editing.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
-                editor.data.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
+                //editor.editing.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
+                //editor.data.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
 
                 editor.conversion.for('downcast').elementToElement({
                   model: 'paragraph',
-                  view: (modelElement, { writer }) => {
+                  view: (modelElement, { writer, mapper }) => {
                     const element = writer.createContainerElement('p', { class: 'data-block' })
                     const span = writer.createAttributeElement('span', { class: 'data-text' });
                     writer.insert(writer.createPositionAt(element, 0), span);
+                    //mapper.bindElements( modelElement, span );
+                    //writer.insert(mapper.toViewPosition( modelElement.range.start ),span);
                     return element
                   },
                   converterPriority: 'high',
