@@ -1,15 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import CustomEditor from '@ckeditor/ckeditor5-build-custom';
 import './App.css'
 
 function App() {
-  // const [document, setDocument] = useState(ExampleDocument);
-
-  // const handleOnChange = (document) => {
-  //   setDocument(document)
-  // }
-
+  
   const config = {
     link: {
       addTargetToExternalLinks: true,
@@ -41,8 +36,6 @@ function App() {
               config={config}
               data="<p>Hello from CKEditor 5!</p>"
               onReady={editor => {
-                // You can store the "editor" and use when it is needed.
-                console.log('Editor is ready to use!', editor);
                 editor.conversion.for('downcast').elementToElement({
                   model: 'paragraph',
                   view: (modelElement, { writer }) => {
@@ -51,7 +44,7 @@ function App() {
                     const element = writer.createContainerElement('p', { class: 'data-block' })
 
                     const span = writer.createAttributeElement('span', { class: 'data-text' });
-                    writer.insert(writer.createPositionAt(element, 1), span);
+                    writer.insert(writer.createPositionAt(element, 0), span);
 
                     return element
 
@@ -72,12 +65,6 @@ function App() {
             />
           </div>
         </div>
-        {/* <div className="html-panel">
-          <p>Serialized HTML:</p>
-          <div className="output">
-            <div className="content" dangerouslySetInnerHTML={{ __html: serialize({ children: document }) }} />
-          </div>
-        </div> */}
       </main>
     </>
   )
