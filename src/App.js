@@ -50,10 +50,10 @@ function AddSpansToText(editor) {
       writer.insert(writer.createPositionAt(div, 0), span);
 
       // Bind the newly created view element to the model element so positions will map accordingly in the future.
-      conversionApi.mapper.bindElements(data.item, div);
+      mapper.bindElements(data.item, div);
 
       // Add the newly created view element to the view.
-      conversionApi.writer.insert(viewPosition, div);
+      writer.insert(viewPosition, div);
 
       // Remember to stop the event propagation.
       evt.stop();
@@ -73,9 +73,7 @@ function createModelToViewPositionMapper(view) {
       return;
     }
 
-    debugger
-
-    // Get the mapped view element <div class="info-box">.
+    // Get the mapped view element <div class="data-block">.
     const viewElement = data.mapper.toViewElement(parent);
 
     // Find the <div class="info-box-content"> in it.
@@ -88,12 +86,16 @@ function createModelToViewPositionMapper(view) {
 
 // Returns the <div class="info-box-content"> nested in the info box view structure.
 function findContentViewElement(editingView, viewElement) {
-  debugger
   for (const value of editingView.createRangeIn(viewElement)) {
     if (value && value.item && value.item.is('element', 'span') && value.item.hasClass('data-text')) {
       return value.item;
     }
   }
+}
+
+function Mappers(editor) {
+  editor.editing.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
+  editor.data.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
 }
 
 
@@ -113,7 +115,7 @@ function App() {
         },
       ],
     },
-    extraPlugins: [AddClassToAllLinks, AddSpansToText],
+    extraPlugins: [AddClassToAllLinks, AddSpansToText, Mappers],
   }
 
   return (
@@ -131,51 +133,7 @@ function App() {
               config={config}
               data="<p>Hello from CKEditor 5!</p>"
               onReady={editor => {
-
                 CKEditorInspector.attach(editor)
-
-                // editor.model.schema.extend('$text', { allowAttributes: 'wrapper' });
-
-                // console.log(editor.model.schema)
-
-                // // // Tell the editor that the model "linkTarget" attribute converts into <a target="..."></a>
-                // editor.conversion.for('downcast').attributeToElement({
-                //   model: 'wrapper',
-                //   view: (attributeValue, { writer }) => {
-                //     const wrapperElement = writer.createAttributeElement('span', { target: attributeValue }, { priority: 5 });
-                //     writer.setCustomProperty('paragraph', true, wrapperElement);
-
-                //     return wrapperElement;
-                //   },
-                //   converterPriority: 'low'
-                // });
-
-                // // Tell the editor that <a target="..."></a> converts into the "linkTarget" attribute in the model.
-                // editor.conversion.for('upcast').attributeToAttribute({
-                //   view: {
-                //     name: 'span',
-                //     key: 'target'
-                //   },
-                //   model: 'wrapper',
-                //   converterPriority: 'low'
-                // });
-
-                // //editor.editing.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
-                // //editor.data.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
-
-                // editor.conversion.for('downcast').elementToElement({
-
-                //   model: 'paragraph',
-                //   view: (modelElement, { writer, mapper }) => {
-                //     const element = writer.createContainerElement('p', { class: 'data-block' })
-                //     const span = writer.createAttributeElement('span', { class: 'data-text' });
-                //     writer.insert(writer.createPositionAt(element, 0), span);
-                //     //mapper.bindElements( modelElement, span );
-                //     //writer.insert(mapper.toViewPosition( modelElement.range.start ),span);
-                //     return element
-                //   },
-                //   converterPriority: 'high',
-                // })
               }}
               onChange={(event, editor) => {
                 const data = editor.getData();
