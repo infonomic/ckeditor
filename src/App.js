@@ -44,9 +44,10 @@ function ParagraphConverter(editor) {
       // Translate the position in the model to a position in the view.
       const viewPosition = mapper.toViewPosition(data.range.start);
 
-      // Create a <p> element that will be inserted into the view at the `viewPosition`.
+      // Create a <div> element that will be inserted into the view at the `viewPosition`.
       const div = writer.createContainerElement('div', { class: 'data-block' });
-      // const span = writer.createAttributeElement('span', { class: 'data-text' });
+      
+      // Create the <span> element that will be inserted into the div
       const span = writer.createEditableElement('span', { class: 'data-text' });
       writer.insert(writer.createPositionAt(div, 0), span);
 
