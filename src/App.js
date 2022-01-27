@@ -115,7 +115,8 @@ function App() {
         },
       ],
     },
-    extraPlugins: [AddClassToAllLinks, AddSpansToText, Mappers],
+    extraPlugins: [AddClassToAllLinks, AddSpansToText],
+    // extraPlugins: [AddClassToAllLinks, AddSpansToText, Mappers],
   }
 
   return (
