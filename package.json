@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@ckeditor/ckeditor5-build-custom": "./custom_modules/ckeditor-ckeditor5-build-custom-2.2.0.tgz",
+    "@ckeditor/ckeditor5-inspector": "^2.3.0",
     "@ckeditor/ckeditor5-react": "^3.0.3",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
