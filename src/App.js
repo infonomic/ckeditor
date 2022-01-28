@@ -37,7 +37,7 @@ function createModelToViewPositionMapper(view) {
  * 
  * @param {*} editingView 
  * @param {*} viewElement 
- * @returns <span class="data-text"> nested in the info box view structure. 
+ * @returns <span class="data-text"> nested in the paragraph view structure. 
  */
 function findContentViewElement( editingView, viewElement ) {
   for ( const value of editingView.createRangeIn( viewElement ) ) {
