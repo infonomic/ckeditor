@@ -1,11 +1,57 @@
 // https://ckeditor.com/docs/ckeditor5/latest/framework/guides/deep-dive/conversion/custom-element-conversion.html
-import React from 'react'
+import React, { useState } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import CustomEditor from '@ckeditor/ckeditor5-build-custom';
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 import './App.css'
 
-// An example plugin brings customization to the downcast pipeline of the editor.
+/**
+ * Helper method to map model to view position
+ * 
+ * @param {*} view 
+ */
+function createModelToViewPositionMapper(view) {
+  return (evt, data) => {
+    const modelPosition = data.modelPosition;
+    const parent = modelPosition.parent;
+
+    // Only the mapping of positions that are directly in
+    // the <paragraph> model element should be modified.
+    if (!parent || !parent.is('element', 'paragraph')) {
+      return;
+    }
+
+    // Get the mapped view element <div class="data-block">.
+    const viewElement = data.mapper.toViewElement(parent);
+
+    // Find the <div class="info-box-content"> in it.
+    const viewContentElement = findContentViewElement( view, viewElement );
+
+    // Translate the model position offset to the view position offset.
+    data.viewPosition = data.mapper.findPositionIn( viewContentElement, modelPosition.offset );
+  };
+}
+
+/**
+ * Helper method to find child span at correct curser offset
+ * 
+ * @param {*} editingView 
+ * @param {*} viewElement 
+ * @returns <span class="data-text"> nested in the info box view structure. 
+ */
+function findContentViewElement( editingView, viewElement ) {
+  for ( const value of editingView.createRangeIn( viewElement ) ) {
+      if ( value.item.is( 'element', 'span' ) && value.item.hasClass( 'data-text' ) ) {
+          return value.item;
+      }
+  }
+}
+
+/**
+ * An example plugin customization via the downcast pipeline of the editor.
+ * 
+ * @param {*} editor 
+ */
 function AddClassToAllLinks(editor) {
   // Both the data and the editing pipelines are affected by this conversion.
   editor.conversion.for('downcast').add(dispatcher => {
@@ -32,6 +78,12 @@ function AddClassToAllLinks(editor) {
   });
 }
 
+/**
+ * Paragraph model downcast converter to wrap all text nodes in 
+ * inline span elements
+ * 
+ * @param {*} editor 
+ */
 function ParagraphConverter(editor) {
   editor.conversion.for('downcast').add(dispatcher => {
     dispatcher.on('insert:paragraph', (evt, data, conversionApi) => {
@@ -61,46 +113,14 @@ function ParagraphConverter(editor) {
       evt.stop();
     });
   });
-}
 
-
-function createModelToViewPositionMapper(view) {
-  return (evt, data) => {
-    const modelPosition = data.modelPosition;
-    const parent = modelPosition.parent;
-
-    // Only the mapping of positions that are directly in
-    // the <paragraph> model element should be modified.
-    if (!parent || !parent.is('element', 'paragraph')) {
-      return;
-    }
-
-    // Get the mapped view element <div class="data-block">.
-    const viewElement = data.mapper.toViewElement(parent);
-
-    // Find the <div class="info-box-content"> in it.
-    const viewContentElement = findContentViewElement( view, viewElement );
-
-    // Translate the model position offset to the view position offset.
-    data.viewPosition = data.mapper.findPositionIn( viewContentElement, modelPosition.offset );
-  };
-}
-
-// Returns the <span class="data-text"> nested in the info box view structure.
-function findContentViewElement( editingView, viewElement ) {
-  for ( const value of editingView.createRangeIn( viewElement ) ) {
-      if ( value.item.is( 'element', 'span' ) && value.item.hasClass( 'data-text' ) ) {
-          return value.item;
-      }
-  }
-}
-
-function ParagraphMapper(editor) {
+  // Dynamic mapping for model to view and curser position with correct offset
   editor.editing.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
   editor.data.mapper.on( 'modelToViewPosition', createModelToViewPositionMapper( editor.editing.view ) );
 }
 
 function App() {
+  const [content, setContent] = useState('<div class="data-block"><span class="data-text">Hello from our custom CKEditor 5 build!</span></div>')
 
   const config = {
     link: {
@@ -116,7 +136,7 @@ function App() {
         },
       ],
     },
-    extraPlugins: [ParagraphConverter, ParagraphMapper],
+    extraPlugins: [ParagraphConverter, AddClassToAllLinks],
   }
 
   return (
@@ -132,13 +152,14 @@ function App() {
             <CKEditor
               editor={CustomEditor}
               config={config}
-              data="<p>Hello from CKEditor 5!</p>"
+              data={content}
               onReady={editor => {
                 CKEditorInspector.attach(editor)
               }}
               onChange={(event, editor) => {
                 const data = editor.getData();
-                console.log({ event, editor, data });
+                // console.log({ event, editor, data });
+                setContent(data)
               }}
               onBlur={(event, editor) => {
                 console.log('Blur.', editor);
@@ -147,6 +168,12 @@ function App() {
                 console.log('Focus.', editor);
               }}
             />
+          </div>
+        </div>
+        <div className="html-panel">
+          <p>Output:</p>
+          <div className="output">
+          <div dangerouslySetInnerHTML={{__html: content}} />
           </div>
         </div>
       </main>
