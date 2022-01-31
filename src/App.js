@@ -6,6 +6,7 @@ import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 import './App.css'
 import { Parser } from 'htmlparser2'
 import { DomHandler } from 'domhandler'
+import { deserialize} from './lib/deserialize'
 
 /**
  * Helper method to map model to view position
@@ -123,7 +124,7 @@ function ParagraphConverter(editor) {
 
 function App() {
   const [content, setContent] = useState('<div class="data-block"><span class="data-text">Hello from our custom CKEditor 5 build!</span></div>')
-  const [model, setModel] = useState('')
+  const [model, setModel] = useState([])
 
   const config = {
     link: {
@@ -154,7 +155,8 @@ function App() {
       } else {
           // Parsing completed, do something
           console.log(dom);
-          // setModel(JSON.stringify(dom, null, 2))
+          const document = new DOMParser().parseFromString(content, 'text/html')
+          setModel(deserialize(document.body))
       }
     });
     
@@ -199,7 +201,7 @@ function App() {
         <div className="model-panel">
           <p>Model: <button onClick={handleConvertToModel}>Convert to Model</button> </p> 
           <div className="output">
-          <div dangerouslySetInnerHTML={{__html: content}} />
+            {JSON.stringify(model, null, 2)}
           </div>
         </div>
       </main>
