@@ -1,9 +1,11 @@
 // https://ckeditor.com/docs/ckeditor5/latest/framework/guides/deep-dive/conversion/custom-element-conversion.html
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import CustomEditor from '@ckeditor/ckeditor5-build-custom';
 import CKEditorInspector from '@ckeditor/ckeditor5-inspector';
 import './App.css'
+import { Parser } from 'htmlparser2'
+import { DomHandler } from 'domhandler'
 
 /**
  * Helper method to map model to view position
@@ -121,6 +123,7 @@ function ParagraphConverter(editor) {
 
 function App() {
   const [content, setContent] = useState('<div class="data-block"><span class="data-text">Hello from our custom CKEditor 5 build!</span></div>')
+  const [model, setModel] = useState('')
 
   const config = {
     link: {
@@ -137,6 +140,27 @@ function App() {
       ],
     },
     extraPlugins: [ParagraphConverter, AddClassToAllLinks],
+  }
+
+  const handleEditorChange = (event, editor) => {
+    const data = editor.getData();
+    setContent(data)
+  }
+
+  const handleConvertToModel = (event) => {
+    const handler = new DomHandler((error, dom) => {
+      if (error) {
+          console.error(error)
+      } else {
+          // Parsing completed, do something
+          console.log(dom);
+          // setModel(JSON.stringify(dom, null, 2))
+      }
+    });
+    
+    const parser = new Parser(handler);
+    parser.write(content);
+    parser.end();
   }
 
   return (
@@ -156,22 +180,24 @@ function App() {
               onReady={editor => {
                 CKEditorInspector.attach(editor)
               }}
-              onChange={(event, editor) => {
-                const data = editor.getData();
-                // console.log({ event, editor, data });
-                setContent(data)
-              }}
+              onChange={handleEditorChange}
               onBlur={(event, editor) => {
-                console.log('Blur.', editor);
+                // console.log('Blur.', editor);
               }}
               onFocus={(event, editor) => {
-                console.log('Focus.', editor);
+                // console.log('Focus.', editor);
               }}
             />
           </div>
         </div>
         <div className="html-panel">
           <p>Output:</p>
+          <div className="output">
+          <div dangerouslySetInnerHTML={{__html: content}} />
+          </div>
+        </div>
+        <div className="model-panel">
+          <p>Model: <button onClick={handleConvertToModel}>Convert to Model</button> </p> 
           <div className="output">
           <div dangerouslySetInnerHTML={{__html: content}} />
           </div>
