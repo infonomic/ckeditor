@@ -155,8 +155,12 @@ function App() {
       } else {
           // Parsing completed, do something
           console.log(dom);
+          
+          // Ignore this hack is a parser inside a parser
           const document = new DOMParser().parseFromString(content, 'text/html')
-          setModel(deserialize(document.body))
+          const m = deserialize(document.body)
+          setModel(m)
+          console.log(m)
       }
     });
     
